@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #f3f0ea; overflow: hidden; }
+
+    #loading {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+      font-family: 'Manrope', sans-serif;
+      background: #f3f0ea; z-index: 10;
+    }
+    #loading-text {
+      font-size: 11px; letter-spacing: .2em;
+      text-transform: uppercase; color: #8a8880;
+    }
+    #loading-bar-wrap { width: 160px; height: 1px; background: #e6e2db; }
+    #loading-bar { height: 1px; width: 0%; background: #0d0d0c; transition: width .3s; }
+
+    #hint {
+      position: absolute; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Manrope', sans-serif;
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: #8a8880; pointer-events: none;
+      opacity: 1; transition: opacity 1.5s; white-space: nowrap; z-index: 5;
+    }
+    #hint.hidden { opacity: 0; }
+
+    #error {
+      position: absolute; inset: 0;
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; padding: 40px; text-align: center;
+      background: #f3f0ea; font-family: 'Manrope', sans-serif; z-index: 10;
+    }
+    #error p { font-size: 13px; color: #8a8880; max-width: 320px; line-height: 1.7; }
+    #error a {
+      font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+      border: 1px solid #0d0d0c; padding: 9px 22px;
+      color: #0d0d0c; text-decoration: none;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="loading">
+  <div id="loading-text">Загрузка 3D-модели</div>
+  <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+</div>
+<div id="hint">Тяните для поворота · Прокрутка для масштаба</div>
+<div id="error">
+  <p id="error-msg">Не удалось загрузить 3D-модель</p>
+  <a id="error-link" href="https://scaniverse.com/scan/fgyiap5bqmkswyr6" target="_blank" rel="noopener">Открыть в Scaniverse →</a>
+</div>
+
+<script src="https://unpkg.com/three@0.170.0/build/three.min.js"></script>
+<script>
+// Patch THREE onto window for gaussian-splats-3d UMD
+window.THREE = THREE;
+</script>
+<script src="https://unpkg.com/@mkkellogg/gaussian-splats-3d@0.4.5/build/gaussian-splats-3d.min.js"></script>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var src = params.get('src') ||
+    'https://dl.dropboxusercontent.com/scl/fi/1zq6u1pisv9jf4jjsa3kl/scan-exhibition-3.glb?rlkey=lsgw5wdyt4sitn8zelds3uid7&raw=1';
+
+  var loadingEl   = document.getElementById('loading');
+  var loadingBar  = document.getElementById('loading-bar');
+  var loadingText = document.getElementById('loading-text');
+  var hintEl      = document.getElementById('hint');
+  var errorEl     = document.getElementById('error');
+
+  if (typeof GaussianSplats3D === 'undefined') {
+    showError('Не удалось загрузить рендерер', src);
+    return;
+  }
+
+  function showError(msg, link) {
+    loadingEl.style.display = 'none';
+    if (msg) document.getElementById('error-msg').textContent = msg;
+    if (link) document.getElementById('error-link').href = link;
+    errorEl.style.display = 'flex';
+  }
+
+  /* Simulated progress during load */
+  var fakeProgress = 0;
+  var fakeTimer = setInterval(function() {
+    fakeProgress = Math.min(fakeProgress + Math.random() * 8, 90);
+    loadingBar.style.width = fakeProgress + '%';
+    loadingText.textContent = 'Загрузка ' + Math.round(fakeProgress) + '%';
+  }, 300);
+
+  var viewer = new GaussianSplats3D.Viewer({
+    cameraUp: [0, 1, 0],
+    initialCameraPosition: [0, 1.5, 3],
+    initialCameraLookAt: [0, 1.5, 0],
+    selfDrivenMode: true,
+    useBuiltInControls: true,
+    sharedMemoryForWorkers: false,
+    renderer: null,        /* let library create its own */
+    scene: null,
+    camera: null,
+    renderMode: GaussianSplats3D.RenderMode.OnChange,
+    sceneRevealMode: GaussianSplats3D.SceneRevealMode.Gradual,
+    progressiveLoadingIntervalSeconds: 0.1,
+  });
+
+  viewer.addSplatScene(src, {
+    splatAlphaRemovalThreshold: 5,
+    showLoadingUI: false,
+  })
+  .then(function() {
+    clearInterval(fakeTimer);
+    loadingBar.style.width = '100%';
+    loadingText.textContent = 'Готово';
+    setTimeout(function() {
+      loadingEl.style.display = 'none';
+      setTimeout(function() { hintEl.classList.add('hidden'); }, 4000);
+    }, 300);
+    viewer.start();
+  })
+  .catch(function(err) {
+    clearInterval(fakeTimer);
+    console.error('Splat load error:', err);
+    showError('Не удалось загрузить 3D-модель галереи', 'https://scaniverse.com/scan/fgyiap5bqmkswyr6');
+  });
+
+})();
+</script>
+</body>
+</html>

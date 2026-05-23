@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>О галерее — Галерея «Мося»</title>
+  <link rel="stylesheet" href="gallery.css">
+  <style>
+    /* ── Page header ──────────────────────── */
+    .page-head {
+      padding: 56px var(--pad) 48px;
+      border-bottom: 1px solid var(--line);
+    }
+    .page-head-title {
+      font-family: var(--serif);
+      font-size: clamp(40px,7vw,88px);
+      font-weight: 300;
+      line-height: .95;
+      letter-spacing: -.02em;
+    }
+
+    /* ── About section ──────────────────── */
+    .about-sec {
+      padding: 60px var(--pad);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    @media (max-width: 680px) {
+      .about-sec { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    .about-text p {
+      font-family: var(--serif);
+      font-size: clamp(17px,1.5vw,21px);
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--fg);
+      margin-bottom: 1.1em;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { font-weight: 400; }
+
+    .about-links {
+      margin-top: 32px;
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .about-links a {
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2px;
+      transition: border-color .2s;
+    }
+    .about-links a:hover { border-color: var(--fg); }
+
+    /* ── Contact section ─────────────────── */
+    .contact-sec {
+      padding: 60px var(--pad) 60px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    @media (max-width: 680px) {
+      .contact-sec { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    .contact-cols {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 40px;
+    }
+    @media (max-width: 800px) { .contact-cols { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 460px) { .contact-cols { grid-template-columns: 1fr; gap: 28px; } }
+
+    .contact-group { display: flex; flex-direction: column; gap: 6px; }
+    .contact-group-title {
+      font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 8px;
+    }
+    .contact-group p,
+    .contact-group a {
+      font-family: var(--serif);
+      font-size: clamp(15px,1.2vw,17px);
+      font-weight: 300;
+      color: var(--fg);
+      line-height: 1.55;
+    }
+    .contact-group .hint {
+      font-family: var(--sans);
+      font-size: 11px !important;
+      color: var(--mid) !important;
+      font-style: italic;
+    }
+    .contact-group a { transition: opacity .2s; }
+    .contact-group a:hover { opacity: .55; }
+
+    /* ── Map area ────────────────────────── */
+    .map-strip {
+      border-top: 1px solid var(--line);
+      padding: 60px var(--pad);
+      background: var(--faint);
+    }
+    .map-inner {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    @media (max-width: 680px) { .map-inner { grid-template-columns: 1fr; gap: 20px; } }
+    .map-address {
+      font-family: var(--serif);
+      font-size: clamp(16px,1.4vw,20px);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+    .map-hint {
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 10px;
+      font-style: italic;
+    }
+    .map-placeholder {
+      width: 100%;
+      aspect-ratio: 16/6;
+      background: #e8e5de;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--sans);
+      font-size: 11px; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--mid);
+    }
+    @media (max-width: 680px) {
+      .map-placeholder { aspect-ratio: 4/3; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo-cropped.png" alt="Галерея Мося" class="site-logo">
+    </a>
+    <nav class="site-nav">
+      <a href="exhibitions.html" class="hide-sm">Выставки</a>
+      <a href="about.html" class="active">О галерее</a>
+      <a href="about.html#contact" class="hide-sm">Контакты</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener" class="nav-icon hide-sm" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" class="nav-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Написать нам</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-body">
+
+  <!-- Page header -->
+  <div class="page-head">
+    <h1 class="page-head-title">О галерее</h1>
+  </div>
+
+  <!-- About -->
+  <section class="about-sec">
+    <div>
+      <span class="label">О пространстве</span>
+    </div>
+    <div class="about-text">
+      <p>Галерея «Мося» открылась в пространстве мастерской художников <strong>Ивана Химина</strong> и <strong><a href="https://instagram.com/uzhve" target="_blank" rel="noopener">Константина Ужве</a></strong> в 2025 году.</p>
+      <p>Исторически проект связан с содружеством художников и музыкантов, а также одноимённым пространством <strong>F5</strong>, располагавшимся на Фонтанной улице, д. 5, объединявшем в себе художественные мастерские, музыкальный клуб, выставочные залы, бар и резиденцию.</p>
+      <p>Когда пришло время освобождать занимаемые помещения, но найти соответствующее по площади и удобству расположения пространство не удалось, организаторы решили рассредоточиться по нескольким локациям, но сохранить дружеские и организационные связи. Так появился клуб F5 на Никольской площади (ул. Римского-Корсакова, д. 39) и мастерская на Моисеенко.</p>
+      <p>Первоначально галерея мыслилась как аффилированная с московской галереей <strong>«Маня»</strong> — домашней галереей, курируемой Кириллом Ивановым, одним из резидентов F5, и Марией Тёсовой, — некая курица о двух головах «Маня и Мося». В планах было обмениваться выставками между СПб и Мск.</p>
+      <p>К сожалению, в виде тандема проект просуществовал недолго — после первой выставки из-за организационных разногласий было принято решение развиваться самостоятельно.</p>
+      <p>Поскольку «Мося» располагается в рабочем пространстве мастерской, выставочная деятельность предполагает нерегулярную периодичность и ограничивается двумя днями экспонирования.</p>
+      <p>Если говорить о жанровых предпочтениях, то это инсталляция — тотальная, сайт-специфичная и беспощадная — та область современного искусства, которая в силу сложности монетизации в последнее время часто оказывается невостребованной галереями либо выполняет прикладную функцию экспозиционного дизайна.</p>
+      <div class="about-links">
+        <a href="https://t.me/mosyagallery" target="_blank" rel="noopener">Telegram-канал</a>
+        <a href="https://t.me/f5noisegraph" target="_blank" rel="noopener">Содружество F5</a>
+        <a href="exhibitions.html">Все выставки</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-sec" id="contact">
+    <div>
+      <span class="label">Контакты</span>
+    </div>
+    <div class="contact-cols">
+      <div class="contact-group">
+        <p class="contact-group-title">Адрес</p>
+        <p>Санкт-Петербург</p>
+        <p>ул. Моисеенко, 8БВ</p>
+        <p class="hint">Арка слева от «Плов №1»</p>
+      </div>
+      <div class="contact-group">
+        <p class="contact-group-title">Связаться</p>
+        <a href="https://t.me/mosyagallery" target="_blank" rel="noopener">@mosyagallery</a>
+        <a href="mailto:uzhveko@gmail.com">uzhveko@gmail.com</a>
+        <a href="tel:+79117142634">+7 911 714-26-34</a>
+      </div>
+      <div class="contact-group">
+        <p class="contact-group-title">Соцсети</p>
+        <a href="https://t.me/mosyagallery" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://t.me/f5noisegraph" target="_blank" rel="noopener">Содружество F5</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map -->
+  <div class="map-strip">
+    <div class="map-inner">
+      <div>
+        <span class="label">Как добраться</span>
+        <div class="map-address" style="margin-top:20px;">
+          Санкт-Петербург<br>
+          ул. Моисеенко, 8БВ
+        </div>
+        <p class="map-hint">Арка слева от «Плов №1»</p>
+      </div>
+      <div>
+        <iframe 
+          src="https://yandex.ru/maps/-/CPwWfI39?embed=1"
+          width="100%" 
+          style="aspect-ratio:16/6; border:none; display:block;"
+          allowfullscreen
+          loading="lazy"
+          title="Галерея Мося на карте"
+        ></iframe>
+        <video
+          src="videos/how-to-find.mp4"
+          controls
+          playsinline
+          style="width:100%; display:block; margin-top:1px; max-height:70vh; background:#000;"
+        ></video>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <img src="images/logo-cropped.png" alt="Галерея Мося" class="footer-logo">
+    <div class="footer-links">
+      <a href="index.html">Главная</a>
+      <a href="exhibitions.html">Выставки</a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Telegram</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Instagram</a>
+    </div>
+    <span class="footer-copy">Санкт-Петербург, 2025–2026</span>
+  </div>
+</footer>
+</body>
+</html>

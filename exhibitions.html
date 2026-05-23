@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Выставки — Галерея «Мося»</title>
+  <link rel="stylesheet" href="gallery.css">
+  <style>
+    /* ── Page header ─────────────────────── */
+    .page-head {
+      padding: 56px var(--pad) 40px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .page-head-title {
+      font-family: var(--serif);
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -.02em;
+    }
+    .page-head-meta {
+      font-size: 11px;
+      color: var(--mid);
+      white-space: nowrap;
+      padding-bottom: 6px;
+    }
+
+    /* ── Grid ────────────────────────────── */
+    .exh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--line);
+    }
+    @media (max-width: 860px) { .exh-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 500px) { .exh-grid { grid-template-columns: 1fr; } }
+
+    .exh-grid .ex-card {
+      background: var(--bg);
+      padding: 0 clamp(18px,3vw,40px);
+    }
+    .exh-grid .ex-card-img-wrap {
+      margin: 0 calc(-1 * clamp(18px,3vw,40px));
+    }
+
+    /* ── Upcoming banner ─────────────────── */
+    .upcoming-banner {
+      margin: 0;
+      padding: 40px var(--pad);
+      background: var(--faint);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .upcoming-banner .label { flex-shrink: 0; }
+    .upcoming-info { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; }
+    .upcoming-artist {
+      font-family: var(--serif);
+      font-size: clamp(22px,3vw,34px);
+      font-weight: 300;
+    }
+    .upcoming-title {
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+    .upcoming-tag {
+      margin-left: auto;
+      font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+      border: 1px solid var(--line);
+      padding: 6px 14px;
+      color: var(--mid);
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo-cropped.png" alt="Галерея Мося" class="site-logo">
+    </a>
+    <nav class="site-nav">
+      <a href="exhibitions.html" class="active">Выставки</a>
+      <a href="about.html" class="hide-sm">О галерее</a>
+      <a href="about.html#contact" class="hide-sm">Контакты</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener" class="nav-icon hide-sm" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" class="nav-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Написать нам</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-body">
+
+  <!-- Upcoming -->
+  <div class="upcoming-banner">
+    <span class="label">Следующая выставка</span>
+    <div class="upcoming-info">
+      <span class="upcoming-artist" id="up-artist"></span>
+      <span class="upcoming-title"  id="up-title"></span>
+    </div>
+    <span class="upcoming-tag">Скоро</span>
+  </div>
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <h1 class="page-head-title">Архив выставок</h1>
+    <span class="page-head-meta" id="count-meta"></span>
+  </div>
+
+  <!-- Grid -->
+  <div class="exh-grid" id="exh-grid"></div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <img src="images/logo-cropped.png" alt="Галерея Мося" class="footer-logo">
+    <div class="footer-links">
+      <a href="index.html">Главная</a>
+      <a href="about.html">О галерее</a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Telegram</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Instagram</a>
+    </div>
+    <span class="footer-copy">Санкт-Петербург, 2025–2026</span>
+  </div>
+</footer>
+
+<script src="gallery-data.js"></script>
+<script>
+  /* Upcoming */
+  document.getElementById('up-artist').textContent = UPCOMING.artist;
+  document.getElementById('up-title').textContent  = UPCOMING.title;
+  document.getElementById('count-meta').textContent =
+    EXHIBITIONS.length + ' проектов · 2025–2026';
+
+  /* Grid */
+  var grid = document.getElementById('exh-grid');
+  EXHIBITIONS.forEach(function(ex) {
+    var a = document.createElement('a');
+    a.className = 'ex-card';
+    a.href = 'exhibition.html?id=' + ex.id;
+    a.innerHTML =
+      '<div class="ex-card-img-wrap"><img src="' + ex.cover + '" alt="' + ex.title + '" loading="lazy"></div>' +
+      '<div class="ex-card-info">' +
+        '<div class="ex-card-meta">' +
+          '<span class="ex-card-num">Выставка ' + ex.num + '</span>' +
+          '<span class="ex-card-dates">' + ex.dates + '</span>' +
+        '</div>' +
+        '<p class="ex-card-artist">' + ex.artist + '</p>' +
+        '<p class="ex-card-title">'  + ex.title  + '</p>' +
+      '</div>';
+    grid.appendChild(a);
+  });
+</script>
+</body>
+</html>

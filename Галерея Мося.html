@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Галерея «Мося» — Санкт-Петербург</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    :root {
+      --bg: #0c0c0c;
+      --surface: #151515;
+      --fg: #e8e4dc;
+      --mid: #5c5c5c;
+      --faint: #1e1e1e;
+      --line: #272727;
+      --sans: 'Manrope', 'Helvetica Neue', Arial, system-ui, sans-serif;
+      --pad: clamp(20px, 5vw, 72px);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; background: none; border: none; padding: 0; color: inherit; font-family: inherit; }
+    strong { font-weight: 600; }
+
+    /* ── HEADER ────────────────────────── */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 0 var(--pad);
+      transition: background 0.35s, border-color 0.35s;
+      border-bottom: 1px solid transparent;
+    }
+    .site-header.scrolled {
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: var(--line);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 66px;
+    }
+    .site-logo {
+      height: 30px;
+      width: auto;
+      filter: invert(1);
+      opacity: 0.88;
+      transition: opacity 0.2s;
+    }
+    .logo-link:hover .site-logo { opacity: 1; }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .site-nav a {
+      font-size: 10.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mid);
+      transition: color 0.2s;
+    }
+    .site-nav a:hover { color: var(--fg); }
+    .nav-tg {
+      border: 1px solid var(--line);
+      padding: 5px 13px;
+      letter-spacing: 0.12em !important;
+      transition: border-color 0.2s, color 0.2s !important;
+    }
+    .nav-tg:hover { border-color: rgba(232,228,220,0.4) !important; }
+
+    @media (max-width: 640px) {
+      .site-nav { gap: 18px; }
+      .site-nav a:nth-child(2), .site-nav a:nth-child(3) { display: none; }
+    }
+
+    /* ── HERO ──────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 600px;
+      overflow: hidden;
+    }
+    .hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 8s ease;
+    }
+    .hero-img.loaded { transform: scale(1.03); }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 96px var(--pad) clamp(36px, 6vh, 64px);
+      background: linear-gradient(
+        175deg,
+        rgba(0,0,0,0.45) 0%,
+        rgba(0,0,0,0) 35%,
+        rgba(0,0,0,0) 55%,
+        rgba(0,0,0,0.72) 100%
+      );
+    }
+    .hero-badge {
+      align-self: flex-start;
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 7px 16px;
+    }
+    .hero-bottom {}
+    .hero-artist {
+      font-size: clamp(52px, 9vw, 108px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 0.95;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .hero-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-ex-title {
+      font-size: clamp(14px, 2vw, 20px);
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      margin-top: 28px;
+    }
+    .hero-sep { opacity: 0.5; }
+
+    /* ── ARCHIVE ───────────────────────── */
+    .archive {
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+    .archive-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 0 var(--pad);
+      margin-bottom: 28px;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+    .section-meta {
+      font-size: 11px;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+    }
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+    @media (max-width: 580px) {
+      .archive-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CARD ──────────────────────────── */
+    .ex-card { cursor: pointer; }
+    .ex-card-img-wrap {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .ex-card-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  filter 0.4s ease;
+      filter: brightness(0.85) saturate(0.9);
+    }
+    .ex-card:hover .ex-card-img-wrap img {
+      transform: scale(1.05);
+      filter: brightness(1) saturate(1);
+    }
+    .ex-card-cta {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: flex-end;
+      background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .ex-card:hover .ex-card-cta { opacity: 1; }
+    .ex-card-cta span {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+    }
+    .ex-card-info {
+      padding: 18px 22px 26px;
+      border-top: 1px solid var(--line);
+    }
+    .ex-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .ex-card-num {
+      font-size: 9.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+    .ex-card-dates {
+      font-size: 10.5px;
+      color: var(--mid);
+      letter-spacing: 0.02em;
+    }
+    .ex-card-artist {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .ex-card-title {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.45;
+      color: rgba(232,228,220,0.72);
+    }
+
+    /* ── ABOUT ─────────────────────────── */
+    .about {
+      border-top: 1px solid var(--line);
+      padding: 72px var(--pad);
+    }
+    .about-inner {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 60px;
+      max-width: 860px;
+    }
+    @media (max-width: 680px) {
+      .about-inner { grid-template-columns: 1fr; gap: 20px; }
+    }
+    .about-text p {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.9;
+      color: rgba(232,228,220,0.65);
+      margin-bottom: 1.2em;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+
+    /* ── CONTACT ───────────────────────── */
+    .contact {
+      border-top: 1px solid var(--line);
+      padding: 72px var(--pad);
+    }
+    .contact-inner {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 60px;
+    }
+    @media (max-width: 680px) {
+      .contact-inner { grid-template-columns: 1fr; gap: 20px; }
+    }
+    .contact-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+    @media (max-width: 800px) {
+      .contact-cols { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .contact-cols { grid-template-columns: 1fr; gap: 28px; }
+    }
+    .contact-group { display: flex; flex-direction: column; gap: 7px; }
+    .contact-group-title {
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+    .contact-group p, .contact-group a {
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(232,228,220,0.6);
+      line-height: 1.5;
+    }
+    .contact-hint {
+      font-size: 12px !important;
+      color: var(--mid) !important;
+      font-style: italic;
+    }
+    .contact-link { transition: color 0.2s; }
+    .contact-link:hover { color: var(--fg); }
+
+    /* ── FOOTER ────────────────────────── */
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 28px var(--pad);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-logo {
+      height: 22px;
+      filter: invert(1);
+      opacity: 0.3;
+    }
+    .footer-copy {
+      font-size: 10.5px;
+      color: var(--mid);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── MODAL ─────────────────────────── */
+    @keyframes mfadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes mslideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 500;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 5vh var(--pad);
+      animation: mfadeIn 0.18s ease;
+    }
+    .modal-box {
+      position: relative;
+      background: #111;
+      width: 100%;
+      max-width: 1080px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      border: 1px solid var(--line);
+      animation: mslideUp 0.22s ease;
+      margin: auto;
+    }
+    @media (max-width: 780px) {
+      .modal-box { grid-template-columns: 1fr; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--mid);
+      z-index: 10;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--fg); }
+
+    .modal-info {
+      padding: 44px 36px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 780px) {
+      .modal-info { padding: 28px 22px; border-right: none; border-bottom: 1px solid var(--line); }
+    }
+    .modal-num {
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 24px;
+    }
+    .modal-artist {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      font-size: 21px;
+      font-weight: 300;
+      line-height: 1.38;
+      margin-bottom: 8px;
+    }
+    .modal-dates {
+      font-size: 11px;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      margin-bottom: 28px;
+    }
+    .modal-rule { height: 1px; background: var(--line); margin-bottom: 28px; }
+    .modal-desc {
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.9;
+      color: rgba(232,228,220,0.58);
+      white-space: pre-line;
+      flex: 1;
+      margin-bottom: 28px;
+    }
+    .modal-credits {
+      font-size: 10.5px;
+      color: var(--mid);
+      line-height: 2.1;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Photo panel */
+    .modal-photos-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-main-wrap {
+      flex: 1;
+      background: #0a0a0a;
+      overflow: hidden;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-main-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-height: 68vh;
+      display: block;
+    }
+    .modal-thumbs {
+      display: flex;
+      gap: 2px;
+      background: var(--line);
+      border-top: 1px solid var(--line);
+    }
+    .modal-thumb {
+      flex: 1;
+      aspect-ratio: 1;
+      overflow: hidden;
+      opacity: 0.45;
+      transition: opacity 0.2s;
+    }
+    .modal-thumb.active, .modal-thumb:hover { opacity: 1; }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* scrollbar */
+    .modal-backdrop::-webkit-scrollbar { width: 4px; }
+    .modal-backdrop::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const UPCOMING = {
+  artist: "Вероника Рудьева",
+  title: "ПО2.0",
+  cover: "images/next-show.jpg",
+};
+
+const EXHIBITIONS = [
+  {
+    id: 6, num: "VI",
+    artist: "Павел Брат",
+    title: "Райский сад",
+    dates: "12–13 апреля 2026",
+    cover: "photos/photo_126.jpg",
+    description: `Цветы в иконной традиции — обозначение рая. Они помещаются в вертограде заключённом на белом фоне — символе чистоты, непорочности и божественного света.
+
+В иконе Богородицы «Неувядаемый свет» дева Мария держит процветший яркими крупными цветами жезл. В барочной поэзии Богородица именуется «шипом благоуханным», уподобляясь розовому кусту.
+
+В советское время возникает феномен «фолежной иконы»: фоторепродукцию иконы помещали в самодельный оклад из фольги, убранный бумажными цветами — возникали домашние божницы, искренние и наивные свидетельства веры.`,
+    credits: { text: "Глеб Ершов", photo: "Михаил Григорьев" },
+    photos: ["photos/photo_126.jpg", "photos/photo_127.jpg", "photos/photo_128.jpg"],
+  },
+  {
+    id: 5, num: "V",
+    artist: "Андрей Рудьев",
+    title: "Afterparty",
+    dates: "19–20 марта 2026",
+    cover: "photos/photo_78.jpg",
+    description: `Тёплая атмосфера чилл-аута и аналогового позитива — завершающая «экспо-тур по галереям нашего города» выставка Андрея Рудьева.`,
+    credits: { photo: "Иван Сень" },
+    photos: ["photos/photo_78.jpg", "photos/photo_88.jpg", "photos/photo_89.jpg"],
+  },
+  {
+    id: 4, num: "IV",
+    artist: "Андрей Кузьмин",
+    title: "Внутреннее государство",
+    dates: "5–6 февраля 2026",
+    cover: "photos/photo_59.jpg",
+    description: `Что можно разглядеть в каменных обломках, найденных в строительном мусоре? Камень — главный язык государства, немой и самый честный документ.
+
+В найденных объектах таится уязвимость — эти недоформы со случайными сколами, следами резца и сверла. В пространстве инсталляции камень может потерять свою опору и быть подвешенным на уровне человеческого роста, вступая с посетителями в диалог на равных, приобретая субъектность.`,
+    credits: { curator: "Иван Химин", text: "Глеб Ершов", photo: "Михаил Григорьев" },
+    photos: ["photos/photo_59.jpg", "photos/photo_60.jpg"],
+  },
+  {
+    id: 3, num: "III",
+    artist: "Кирилл Лебедев (Кто)",
+    title: "Ещё раз то же самое, но немного другое",
+    dates: "22–23 декабря 2025",
+    cover: "photos/photo_36.jpg",
+    description: `Редкий гость в наших краях: последний раз Кирилл Лебедев (Кто) показывал проект в Петербурге в далёком 2010 году, когда всё было иначе.
+
+Язык — главное в его работах: ряды синонимов составлены так, что закручиваются и искривляются, словно витки телефонного провода. Буквализация метафор, новое прочтение привычных слов, перевёрнутые пословицы.
+
+Художник уверенным жестом отправляет на городские стены длинные фразы и целые абзацы — они подкреплены пластикой: буквы и строчки складываются в цветовые пятна, написанное получает колористический объём.`,
+    credits: { text: "Павел Герасименко", photo: "Михаил Григорьев" },
+    photos: ["photos/photo_36.jpg", "photos/photo_46.jpg"],
+  },
+  {
+    id: 2, num: "II",
+    artist: "Пётр Белый",
+    title: "Плач",
+    dates: "18–19 декабря 2025",
+    cover: "photos/photo_27.jpg",
+    description: `Скорбно приспущенный флаг близок траурной пластике тела, положению членов причетчицы, чьи склоненные плечи и голова скрыты под платом, платком, покрывалом.
+
+Из согбенной фигуры разливается плач. Новая инсталляция Петра Белого следует этой поминальной конституции, хорошо знакомой по надгробным памятникам, изображающим плакальщиц.
+
+Сооружённый в галерее «Мося» отпевальный фонтан, плакуша-шутиха, садово-парковая голгофа со стягами — скульптура ритуального свойства, Stabat mater от стройматериалов.`,
+    credits: { text: "Галина Поликарпова", photo: "Михаил Григорьев" },
+    photos: ["photos/photo_27.jpg", "photos/photo_28.jpg", "photos/photo_29.jpg"],
+  },
+  {
+    id: 1, num: "I",
+    artist: "Павел Зуданов",
+    title: "Одна из попыток предвидеть апокалипсис",
+    dates: "15–16 октября 2025",
+    cover: "photos/photo_8.jpg",
+    description: `«Мои работы обращаются к воображаемому будущему, где природа через сто лет примет в себя следы человеческой цивилизации — машины, здания, технику. Всё это однажды станет единым ландшафтом.»
+
+— Павел Зуданов`,
+    credits: {},
+    photos: ["photos/photo_3.jpg", "photos/photo_8.jpg"],
+  },
+];
+
+/* ── Header ─────────────────────────────── */
+function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+  return (
+    <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
+      <div className="header-inner">
+        <a href="#top" className="logo-link">
+          <img src="images/logo.png" alt="Галерея Мося" className="site-logo" />
+        </a>
+        <nav className="site-nav">
+          <a href="#exhibitions">Выставки</a>
+          <a href="#about">О галерее</a>
+          <a href="#contact">Контакты</a>
+          <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" className="nav-tg">TG</a>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+/* ── Hero ───────────────────────────────── */
+function Hero() {
+  const imgRef = useRef(null);
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete) img.classList.add('loaded');
+    else img.addEventListener('load', () => img.classList.add('loaded'));
+  }, []);
+  return (
+    <section className="hero" id="top">
+      <img ref={imgRef} src={UPCOMING.cover} alt={UPCOMING.artist} className="hero-img" />
+      <div className="hero-overlay">
+        <div className="hero-badge">Следующая выставка</div>
+        <div className="hero-bottom">
+          <h1 className="hero-artist">{UPCOMING.artist}</h1>
+          <div className="hero-title-row">
+            <span className="hero-ex-title">{UPCOMING.title}</span>
+          </div>
+          <div className="hero-meta">
+            <span>Галерея «Мося»</span>
+            <span className="hero-sep">—</span>
+            <span>ул. Моисеенко 8БВ</span>
+            <span className="hero-sep">—</span>
+            <span>Санкт-Петербург</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── ExhibitionCard ──────────────────────── */
+function ExhibitionCard({ ex, onClick }) {
+  return (
+    <article className="ex-card" onClick={() => onClick(ex)} role="button" tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick(ex)}>
+      <div className="ex-card-img-wrap">
+        <img src={ex.cover} alt={ex.title} loading="lazy" />
+        <div className="ex-card-cta"><span>Смотреть →</span></div>
+      </div>
+      <div className="ex-card-info">
+        <div className="ex-card-row">
+          <span className="ex-card-num">Выставка {ex.num}</span>
+          <span className="ex-card-dates">{ex.dates}</span>
+        </div>
+        <p className="ex-card-artist">{ex.artist}</p>
+        <p className="ex-card-title">{ex.title}</p>
+      </div>
+    </article>
+  );
+}
+
+/* ── Archive ────────────────────────────── */
+function Archive({ onSelect }) {
+  return (
+    <section id="exhibitions" className="archive">
+      <div className="archive-head">
+        <span className="section-label">Архив выставок</span>
+        <span className="section-meta">{EXHIBITIONS.length} проектов · 2025–2026</span>
+      </div>
+      <div className="archive-grid">
+        {EXHIBITIONS.map(ex => (
+          <ExhibitionCard key={ex.id} ex={ex} onClick={onSelect} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── About ──────────────────────────────── */
+function About() {
+  return (
+    <section id="about" className="about">
+      <div className="about-inner">
+        <div>
+          <span className="section-label">О галерее</span>
+        </div>
+        <div className="about-text">
+          <p>Галерея «Мося» — пространство внутри мастерской художников <strong>Ивана Химина</strong> и <strong>Константина Ужве</strong> по адресу ул. Моисеенко, 8БВ, Санкт-Петербург.</p>
+          <p>«Мося» — петербургский побратим московской галереи <strong>«Маня»</strong> и часть творческого содружества <strong>F5</strong>.</p>
+          <p>Проект задуман как серия двухдневных выставок, которые будут появляться спонтанно — без расписания, но всегда по внутреннему ощущению необходимости.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Contact ────────────────────────────── */
+function Contact() {
+  return (
+    <section id="contact" className="contact">
+      <div className="contact-inner">
+        <div>
+          <span className="section-label">Контакты</span>
+        </div>
+        <div className="contact-cols">
+          <div className="contact-group">
+            <p className="contact-group-title">Адрес</p>
+            <p>Санкт-Петербург</p>
+            <p>ул. Моисеенко, 8БВ</p>
+            <p className="contact-hint">Арка слева от «Плов №1»</p>
+          </div>
+          <div className="contact-group">
+            <p className="contact-group-title">Связаться</p>
+            <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" className="contact-link">@mosyagallery</a>
+            <a href="mailto:uzhveko@gmail.com" className="contact-link">uzhveko@gmail.com</a>
+            <a href="tel:+79117142634" className="contact-link">+7 911 714-26-34</a>
+          </div>
+          <div className="contact-group">
+            <p className="contact-group-title">Соцсети</p>
+            <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" className="contact-link">Telegram</a>
+            <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener" className="contact-link">Instagram</a>
+            <a href="https://t.me/f5noisegraph" target="_blank" rel="noopener" className="contact-link">Содружество F5</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Footer ─────────────────────────────── */
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <img src="images/logo.png" alt="Галерея Мося" className="footer-logo" />
+        <span className="footer-copy">Санкт-Петербург, 2025–2026</span>
+      </div>
+    </footer>
+  );
+}
+
+/* ── Modal ──────────────────────────────── */
+function Modal({ ex, onClose }) {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const fn = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') setActive(p => Math.min(p + 1, ex.photos.length - 1));
+      if (e.key === 'ArrowLeft') setActive(p => Math.max(p - 1, 0));
+    };
+    window.addEventListener('keydown', fn);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', fn);
+      document.body.style.overflow = '';
+    };
+  }, [onClose, ex.photos.length]);
+
+  const hasCredits = Object.keys(ex.credits).length > 0;
+
+  return (
+    <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box" role="dialog" aria-modal="true" aria-label={ex.title}>
+        <button className="modal-close" onClick={onClose} aria-label="Закрыть">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <line x1="2" y1="2" x2="18" y2="18" stroke="currentColor" strokeWidth="1.4"/>
+            <line x1="18" y1="2" x2="2" y2="18" stroke="currentColor" strokeWidth="1.4"/>
+          </svg>
+        </button>
+
+        <div className="modal-info">
+          <p className="modal-num">Выставка {ex.num}</p>
+          <p className="modal-artist">{ex.artist}</p>
+          <h2 className="modal-title">{ex.title}</h2>
+          <p className="modal-dates">{ex.dates}</p>
+          <div className="modal-rule"></div>
+          <p className="modal-desc">{ex.description}</p>
+          {hasCredits && (
+            <div className="modal-credits">
+              {ex.credits.curator && <p>Куратор: {ex.credits.curator}</p>}
+              {ex.credits.text && <p>Текст: {ex.credits.text}</p>}
+              {ex.credits.photo && <p>Фото: {ex.credits.photo}</p>}
+            </div>
+          )}
+        </div>
+
+        <div className="modal-photos-col">
+          <div className="modal-main-wrap">
+            <img
+              key={active}
+              src={ex.photos[active]}
+              alt={`${ex.artist} — фото ${active + 1}`}
+              className="modal-main-img"
+              loading="eager"
+            />
+          </div>
+          {ex.photos.length > 1 && (
+            <div className="modal-thumbs">
+              {ex.photos.map((src, i) => (
+                <button
+                  key={i}
+                  className={`modal-thumb${i === active ? ' active' : ''}`}
+                  onClick={() => setActive(i)}
+                  aria-label={`Фото ${i + 1}`}
+                >
+                  <img src={src} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── App ────────────────────────────────── */
+function App() {
+  const [selected, setSelected] = useState(null);
+  return (
+    <div className="site">
+      <Header />
+      <Hero />
+      <Archive onSelect={setSelected} />
+      <About />
+      <Contact />
+      <Footer />
+      {selected && <Modal ex={selected} onClose={() => setSelected(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

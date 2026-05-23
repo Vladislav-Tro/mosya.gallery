@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Выставка — Галерея «Мося»</title>
+  <link rel="stylesheet" href="gallery.css">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <style>
+    /* ── Intro header ────────────────────── */
+    .ex-intro {
+      padding: 52px var(--pad) 48px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+    }
+    @media (max-width: 600px) { .ex-intro { grid-template-columns: 1fr; } }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 28px;
+    }
+    .breadcrumb a { color: var(--mid); transition: color .2s; }
+    .breadcrumb a:hover { color: var(--fg); }
+    .breadcrumb-sep { opacity: .4; }
+
+    .ex-num {
+      font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 10px;
+    }
+    .ex-artist {
+      font-size: 11px; font-weight: 600; letter-spacing: .16em;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    .ex-title {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300; line-height: 1.18;
+      letter-spacing: -.01em;
+      margin-bottom: 14px;
+    }
+    .ex-dates { font-size: 12px; color: var(--mid); letter-spacing: .04em; }
+
+    .ex-nav {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    }
+    .ex-nav a {
+      font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--mid); transition: color .2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ex-nav a:hover { color: var(--fg); }
+
+    /* ── Photo gallery ───────────────────── */
+    .gallery-section { padding: 0 0 0; }
+
+    /* Main photo */
+    .gallery-main {
+      position: relative;
+      background: var(--faint);
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+    .gallery-main img {
+      width: 100%;
+      max-height: 78vh;
+      object-fit: contain;
+      display: block;
+      transition: opacity .22s;
+    }
+
+    /* Thumbnail strip */
+    .gallery-thumbs {
+      display: flex;
+      gap: 2px;
+      background: var(--line);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .gallery-thumbs::-webkit-scrollbar { display: none; }
+    .gallery-thumb {
+      flex: 0 0 calc(100% / 8);
+      min-width: 64px;
+      aspect-ratio: 1;
+      overflow: hidden;
+      cursor: pointer;
+      opacity: .45;
+      transition: opacity .2s;
+      border: none;
+      background: var(--faint);
+    }
+    .gallery-thumb.active,
+    .gallery-thumb:hover { opacity: 1; }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    @media (max-width: 640px) {
+      .gallery-thumb { flex: 0 0 calc(100% / 5); }
+    }
+
+    /* ── Content section ─────────────────── */
+    .ex-content {
+      padding: 52px var(--pad) 0;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 60px;
+    }
+    @media (max-width: 780px) {
+      .ex-content { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    .ex-description p {
+      font-family: var(--serif);
+      font-size: clamp(16px,1.4vw,20px);
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--fg);
+      margin-bottom: 1.3em;
+    }
+    .ex-description p:last-child { margin-bottom: 0; }
+
+    .ex-sidebar {}
+    .ex-credits {
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+    .ex-credits-label {
+      font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 14px;
+    }
+    .ex-credits p {
+      font-size: 13px; color: var(--mid);
+      line-height: 2;
+    }
+
+    /* ── 3D Model viewer ─────────────────── */
+    .model-section {
+      border-top: 1px solid var(--line);
+      padding: 0;
+    }
+    .model-head {
+      padding: 28px var(--pad) 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .model-hint {
+      font-size: 11px;
+      color: var(--mid);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    model-viewer {
+      width: 100%;
+      height: 70vh;
+      min-height: 400px;
+      background: var(--faint);
+      display: block;
+      --progress-bar-color: var(--fg);
+      --progress-bar-height: 2px;
+    }
+    .model-controls {
+      display: flex;
+      gap: 2px;
+      padding: 0 var(--pad) 40px;
+      border-bottom: 1px solid var(--line);
+    }
+    .model-btn {
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      border: 1px solid var(--line);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      background: none;
+      font-family: var(--sans);
+    }
+    .model-btn:hover { color: var(--fg); border-color: var(--fg); }
+
+    /* ── Prev/Next nav ───────────────────── */
+    .ex-prevnext {
+      padding: 48px var(--pad) 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+      border-top: 1px solid var(--line);
+      margin-top: 60px;
+    }
+    .ex-prevnext a {
+      background: var(--bg);
+      padding: 28px clamp(18px,3vw,40px);
+      display: flex; flex-direction: column; gap: 8px;
+      transition: background .2s;
+    }
+    .ex-prevnext a:hover { background: var(--faint); }
+    .ex-prevnext .pn-label {
+      font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--mid);
+    }
+    .ex-prevnext .pn-artist {
+      font-size: 11px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .ex-prevnext .pn-title {
+      font-family: var(--serif);
+      font-size: 17px; font-weight: 300;
+      color: var(--mid);
+    }
+    .pn-next { text-align: right; }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo-cropped.png" alt="Галерея Мося" class="site-logo">
+    </a>
+    <nav class="site-nav">
+      <a href="exhibitions.html" class="active">Выставки</a>
+      <a href="about.html" class="hide-sm">О галерее</a>
+      <a href="about.html#contact" class="hide-sm">Контакты</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener" class="nav-icon hide-sm" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" class="nav-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Написать нам</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-body" id="page-body">
+
+  <!-- Intro -->
+  <div class="ex-intro">
+    <div>
+      <div class="breadcrumb">
+        <a href="exhibitions.html">Выставки</a>
+        <span class="breadcrumb-sep">/</span>
+        <span id="bc-num"></span>
+      </div>
+      <p class="ex-num"   id="ex-num"></p>
+      <p class="ex-artist" id="ex-artist"></p>
+      <h1 class="ex-title" id="ex-title"></h1>
+      <p class="ex-dates"  id="ex-dates"></p>
+    </div>
+    <div class="ex-nav" id="ex-nav"></div>
+  </div>
+
+  <!-- Gallery -->
+  <div class="gallery-section">
+    <div class="gallery-main" id="gallery-main">
+      <img id="gallery-img" src="" alt="" loading="eager">
+    </div>
+    <div class="gallery-thumbs" id="gallery-thumbs"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="ex-content">
+    <div class="ex-description" id="ex-description"></div>
+    <div class="ex-sidebar">
+      <div class="ex-credits" id="ex-credits" style="display:none;">
+        <p class="ex-credits-label">Благодарности</p>
+        <div id="ex-credits-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D Model -->
+  <div class="model-section" id="model-section" style="display:none;">
+    <div class="model-head">
+      <span class="label">Экспозиция в 3D</span>
+      <span class="model-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Тяните мышью или пальцем для поворота · Прокрутка для масштаба
+      </span>
+    </div>
+    <model-viewer
+      id="model-viewer"
+      src=""
+      alt="3D-модель экспозиции"
+      camera-controls
+      auto-rotate
+      auto-rotate-delay="2000"
+      rotation-per-second="8deg"
+      shadow-intensity="1"
+      environment-image="neutral"
+      exposure="1"
+      loading="lazy"
+    ></model-viewer>
+    <div class="model-controls">
+      <button class="model-btn" id="btn-rotate">⟳ Авто-вращение</button>
+      <button class="model-btn" id="btn-fullscreen">⤢ Полный экран</button>
+    </div>
+  </div>
+
+  <!-- Prev / Next -->
+  <div class="ex-prevnext" id="ex-prevnext"></div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <img src="images/logo-cropped.png" alt="Галерея Мося" class="footer-logo">
+    <div class="footer-links">
+      <a href="index.html">Главная</a>
+      <a href="exhibitions.html">Выставки</a>
+      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Telegram</a>
+      <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Instagram</a>
+    </div>
+    <span class="footer-copy">Санкт-Петербург, 2025–2026</span>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" style="display:none;">
+  <span class="lightbox-close" id="lb-close">Закрыть</span>
+  <button class="lightbox-prev" id="lb-prev">&#8592;</button>
+  <img class="lightbox-img" id="lb-img" src="" alt="">
+  <button class="lightbox-next" id="lb-next">&#8594;</button>
+  <span class="lightbox-counter" id="lb-counter"></span>
+</div>
+
+<script src="gallery-data.js"></script>
+<script>
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  var ex = getExhibitionById(id);
+
+  if (!ex) {
+    window.location.href = 'exhibitions.html';
+  } else {
+    /* Meta */
+    document.title = ex.artist + ' — ' + ex.title + ' · Галерея «Мося»';
+    document.getElementById('bc-num').textContent = 'Выставка ' + ex.num;
+    document.getElementById('ex-num').textContent    = 'Выставка ' + ex.num;
+    document.getElementById('ex-artist').textContent = ex.artist;
+    document.getElementById('ex-title').textContent  = ex.title;
+    document.getElementById('ex-dates').textContent  = ex.dates;
+
+    /* Gallery */
+    var activeIdx = 0;
+    var mainImg = document.getElementById('gallery-img');
+    var thumbsEl = document.getElementById('gallery-thumbs');
+
+    function setPhoto(i) {
+      activeIdx = i;
+      mainImg.style.opacity = '0';
+      setTimeout(function() {
+        mainImg.src = ex.photos[i];
+        mainImg.alt = ex.artist + ' — фото ' + (i+1);
+        mainImg.style.opacity = '1';
+      }, 120);
+      thumbsEl.querySelectorAll('.gallery-thumb').forEach(function(t, ti) {
+        t.classList.toggle('active', ti === i);
+      });
+      updateLbCounter();
+    }
+
+    mainImg.src = ex.photos[0];
+    document.getElementById('gallery-main').addEventListener('click', function() {
+      openLightbox(activeIdx);
+    });
+
+    ex.photos.forEach(function(src, i) {
+      var btn = document.createElement('button');
+      btn.className = 'gallery-thumb' + (i === 0 ? ' active' : '');
+      btn.innerHTML = '<img src="' + src + '" alt="" loading="lazy">';
+      btn.addEventListener('click', function() { setPhoto(i); });
+      thumbsEl.appendChild(btn);
+    });
+
+    /* Description */
+    var desc = document.getElementById('ex-description');
+    ex.description.forEach(function(para) {
+      var p = document.createElement('p');
+      p.textContent = para;
+      desc.appendChild(p);
+    });
+
+    /* Credits */
+    if (Object.keys(ex.credits).length) {
+      var credEl = document.getElementById('ex-credits');
+      var credBody = document.getElementById('ex-credits-body');
+      credEl.style.display = '';
+      var labels = { curator: 'Куратор', text: 'Текст', photo: 'Фото' };
+      Object.keys(ex.credits).forEach(function(k) {
+        var p = document.createElement('p');
+        p.textContent = (labels[k] || k) + ': ' + ex.credits[k];
+        credBody.appendChild(p);
+      });
+    }
+
+    /* Prev / Next */
+    var idx = getExhibitionIndex(id);
+    var prev = EXHIBITIONS[idx - 1];
+    var next = EXHIBITIONS[idx + 1];
+    var pn = document.getElementById('ex-prevnext');
+    pn.style.padding = '0';
+
+    if (prev) {
+      var a = document.createElement('a');
+      a.href = 'exhibition.html?id=' + prev.id;
+      a.innerHTML = '<span class="pn-label">← Предыдущая</span>' +
+        '<span class="pn-artist">' + prev.artist + '</span>' +
+        '<span class="pn-title">' + prev.title + '</span>';
+      pn.appendChild(a);
+    } else {
+      pn.appendChild(document.createElement('div'));
+    }
+
+    if (next) {
+      var b = document.createElement('a');
+      b.className = 'pn-next';
+      b.href = 'exhibition.html?id=' + next.id;
+      b.innerHTML = '<span class="pn-label">Следующая →</span>' +
+        '<span class="pn-artist">' + next.artist + '</span>' +
+        '<span class="pn-title">' + next.title + '</span>';
+      pn.appendChild(b);
+    }
+
+    /* 3D Model / Scan link */
+    if (ex.model || ex.scanLink) {
+      var modelSection = document.getElementById('model-section');
+      modelSection.style.display = '';
+
+      var mv = document.getElementById('model-viewer');
+      mv.style.display = 'none';
+      document.querySelector('.model-controls').style.display = 'none';
+
+      if (ex.scanLink) {
+        /* Beautiful scan preview card */
+        var card = document.createElement('div');
+        card.style.cssText = 'position:relative;overflow:hidden;background:var(--faint);height:70vh;min-height:400px;display:flex;align-items:flex-end;';
+
+        var bg = document.createElement('img');
+        bg.src = ex.scanPreview || ex.cover;
+        bg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.75);transition:transform 8s ease;transform:scale(1.03);';
+        setTimeout(function(){ bg.style.transform = 'scale(1)'; }, 100);
+
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:relative;z-index:2;padding:40px var(--pad) 48px;display:flex;flex-direction:column;align-items:flex-start;gap:20px;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 100%);width:100%;';
+
+        var badge = document.createElement('div');
+        badge.style.cssText = 'font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.3);padding:6px 14px;width:fit-content;';
+        badge.textContent = 'Доступен 3D-тур';
+
+        var headline = document.createElement('p');
+        headline.style.cssText = 'font-family:var(--serif);font-size:clamp(20px,3vw,36px);font-weight:300;color:#fff;line-height:1.2;';
+        headline.textContent = 'Экспозиция в трёхмерном пространстве';
+
+        var sub = document.createElement('p');
+        sub.style.cssText = 'font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;max-width:440px;';
+        sub.textContent = 'Интерактивный скан галерейного зала — можно осмотреть выставку со всех сторон, приближать и вращать пространство.';
+
+        var btn = document.createElement('a');
+        btn.href = ex.scanLink;
+        btn.target = '_blank';
+        btn.rel = 'noopener';
+        btn.style.cssText = 'display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.6);padding:11px 24px;margin-top:4px;transition:background .2s,border-color .2s;';
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Открыть 3D-тур';
+        btn.addEventListener('mouseenter', function(){ this.style.background='rgba(255,255,255,.12)'; this.style.borderColor='rgba(255,255,255,1)'; });
+        btn.addEventListener('mouseleave', function(){ this.style.background=''; this.style.borderColor='rgba(255,255,255,.6)'; });
+
+        overlay.appendChild(badge);
+        overlay.appendChild(headline);
+        overlay.appendChild(sub);
+        overlay.appendChild(btn);
+        card.appendChild(bg);
+        card.appendChild(overlay);
+        mv.parentNode.insertBefore(card, mv.nextSibling);
+      }
+    }
+
+    /* Lightbox */
+    var lb      = document.getElementById('lightbox');
+    var lbImg   = document.getElementById('lb-img');
+    var lbCount = document.getElementById('lb-counter');
+    var lbIdx   = 0;
+
+    function updateLbCounter() {
+      lbCount.textContent = (lbIdx + 1) + ' / ' + ex.photos.length;
+    }
+    function openLightbox(i) {
+      lbIdx = i;
+      lbImg.src = ex.photos[lbIdx];
+      updateLbCounter();
+      lb.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lb.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    function lbStep(dir) {
+      lbIdx = (lbIdx + dir + ex.photos.length) % ex.photos.length;
+      lbImg.src = ex.photos[lbIdx];
+      setPhoto(lbIdx);
+    }
+
+    document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    document.getElementById('lb-prev').addEventListener('click', function() { lbStep(-1); });
+    document.getElementById('lb-next').addEventListener('click', function() { lbStep(1); });
+    lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', function(e) {
+      if (lb.style.display === 'none') return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbStep(-1);
+      if (e.key === 'ArrowRight') lbStep(1);
+    });
+  }
+</script>
+</body>
+</html>
