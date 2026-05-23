@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Выставка — Галерея «Мося»</title>
   <link rel="stylesheet" href="gallery.css">
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
     /* ── Intro header ────────────────────── */
     .ex-intro {
@@ -136,53 +135,7 @@
       line-height: 2;
     }
 
-    /* ── 3D Model viewer ─────────────────── */
-    .model-section {
-      border-top: 1px solid var(--line);
-      padding: 0;
-    }
-    .model-head {
-      padding: 28px var(--pad) 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .model-hint {
-      font-size: 11px;
-      color: var(--mid);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    model-viewer {
-      width: 100%;
-      height: 70vh;
-      min-height: 400px;
-      background: var(--faint);
-      display: block;
-      --progress-bar-color: var(--fg);
-      --progress-bar-height: 2px;
-    }
-    .model-controls {
-      display: flex;
-      gap: 2px;
-      padding: 0 var(--pad) 40px;
-      border-bottom: 1px solid var(--line);
-    }
-    .model-btn {
-      font-size: 10px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--mid);
-      border: 1px solid var(--line);
-      padding: 7px 16px;
-      cursor: pointer;
-      transition: color .2s, border-color .2s;
-      background: none;
-      font-family: var(--sans);
-    }
-    .model-btn:hover { color: var(--fg); border-color: var(--fg); }
+
 
     /* ── Prev/Next nav ───────────────────── */
     .ex-prevnext {
@@ -228,7 +181,6 @@
       <a href="about.html" class="hide-sm">О галерее</a>
       <a href="about.html#contact" class="hide-sm">Контакты</a>
       <a href="https://instagram.com/mosyagallery" target="_blank" rel="noopener" class="nav-icon hide-sm" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-      <a href="https://t.me/mosyagallery" target="_blank" rel="noopener" class="nav-tg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Написать нам</a>
     </nav>
   </div>
 </header>
@@ -267,34 +219,6 @@
         <p class="ex-credits-label">Благодарности</p>
         <div id="ex-credits-body"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- 3D Model -->
-  <div class="model-section" id="model-section" style="display:none;">
-    <div class="model-head">
-      <span class="label">Экспозиция в 3D</span>
-      <span class="model-hint">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        Тяните мышью или пальцем для поворота · Прокрутка для масштаба
-      </span>
-    </div>
-    <model-viewer
-      id="model-viewer"
-      src=""
-      alt="3D-модель экспозиции"
-      camera-controls
-      auto-rotate
-      auto-rotate-delay="2000"
-      rotation-per-second="8deg"
-      shadow-intensity="1"
-      environment-image="neutral"
-      exposure="1"
-      loading="lazy"
-    ></model-viewer>
-    <div class="model-controls">
-      <button class="model-btn" id="btn-rotate">⟳ Авто-вращение</button>
-      <button class="model-btn" id="btn-fullscreen">⤢ Полный экран</button>
     </div>
   </div>
 
@@ -421,59 +345,6 @@
         '<span class="pn-artist">' + next.artist + '</span>' +
         '<span class="pn-title">' + next.title + '</span>';
       pn.appendChild(b);
-    }
-
-    /* 3D Model / Scan link */
-    if (ex.model || ex.scanLink) {
-      var modelSection = document.getElementById('model-section');
-      modelSection.style.display = '';
-
-      var mv = document.getElementById('model-viewer');
-      mv.style.display = 'none';
-      document.querySelector('.model-controls').style.display = 'none';
-
-      if (ex.scanLink) {
-        /* Beautiful scan preview card */
-        var card = document.createElement('div');
-        card.style.cssText = 'position:relative;overflow:hidden;background:var(--faint);height:70vh;min-height:400px;display:flex;align-items:flex-end;';
-
-        var bg = document.createElement('img');
-        bg.src = ex.scanPreview || ex.cover;
-        bg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.75);transition:transform 8s ease;transform:scale(1.03);';
-        setTimeout(function(){ bg.style.transform = 'scale(1)'; }, 100);
-
-        var overlay = document.createElement('div');
-        overlay.style.cssText = 'position:relative;z-index:2;padding:40px var(--pad) 48px;display:flex;flex-direction:column;align-items:flex-start;gap:20px;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 100%);width:100%;';
-
-        var badge = document.createElement('div');
-        badge.style.cssText = 'font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.3);padding:6px 14px;width:fit-content;';
-        badge.textContent = 'Доступен 3D-тур';
-
-        var headline = document.createElement('p');
-        headline.style.cssText = 'font-family:var(--serif);font-size:clamp(20px,3vw,36px);font-weight:300;color:#fff;line-height:1.2;';
-        headline.textContent = 'Экспозиция в трёхмерном пространстве';
-
-        var sub = document.createElement('p');
-        sub.style.cssText = 'font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;max-width:440px;';
-        sub.textContent = 'Интерактивный скан галерейного зала — можно осмотреть выставку со всех сторон, приближать и вращать пространство.';
-
-        var btn = document.createElement('a');
-        btn.href = ex.scanLink;
-        btn.target = '_blank';
-        btn.rel = 'noopener';
-        btn.style.cssText = 'display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.6);padding:11px 24px;margin-top:4px;transition:background .2s,border-color .2s;';
-        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Открыть 3D-тур';
-        btn.addEventListener('mouseenter', function(){ this.style.background='rgba(255,255,255,.12)'; this.style.borderColor='rgba(255,255,255,1)'; });
-        btn.addEventListener('mouseleave', function(){ this.style.background=''; this.style.borderColor='rgba(255,255,255,.6)'; });
-
-        overlay.appendChild(badge);
-        overlay.appendChild(headline);
-        overlay.appendChild(sub);
-        overlay.appendChild(btn);
-        card.appendChild(bg);
-        card.appendChild(overlay);
-        mv.parentNode.insertBefore(card, mv.nextSibling);
-      }
     }
 
     /* Lightbox */
